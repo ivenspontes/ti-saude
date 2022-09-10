@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+    laravel:
+        container_name: laravel
+        build:
+            context: .
+            dockerfile: ./.docker/laravel/Dockerfile
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - .:/var/www/laravel
