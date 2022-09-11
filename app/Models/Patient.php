@@ -21,4 +21,9 @@ class Patient extends Model
         'birth_date' => 'date',
         'phones' => 'array',
     ];
+
+    public function healthInsurances()
+    {
+        return $this->belongsToMany(HealthInsurance::class)->withPivot('contract_number');
+    }
 }

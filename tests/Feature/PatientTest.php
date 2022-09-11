@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Resources\PatientCollection;
 use App\Http\Resources\PatientResource;
+use App\Models\HealthInsurance;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,6 +32,14 @@ class PatientTest extends TestCase
 
         $patients = Patient::factory(30)->create();
 
+        $healthInsurances = HealthInsurance::factory(5)->create();
+
+        $patients->each(function ($patient) use ($healthInsurances) {
+            $healthInsurances->take(rand(1, 5))->each(function ($healthInsurance) use ($patient) {
+                $patient->healthInsurances()->attach($healthInsurance, ['contract_number' => rand(100000, 999999)]);
+            });
+        });
+
         $request = Request::create(route('patients.index'));
 
         $this->actingAs($user)
@@ -44,6 +53,12 @@ class PatientTest extends TestCase
         $user = User::factory()->create();
 
         $patient = Patient::factory()->create();
+
+        $healthInsurances = HealthInsurance::factory(5)->create();
+
+        $healthInsurances->take(rand(1, 5))->each(function ($healthInsurance) use ($patient) {
+            $patient->healthInsurances()->attach($healthInsurance, ['contract_number' => rand(100000, 999999)]);
+        });
 
         $request = Request::create(route('patients.show', $patient->id));
 
@@ -59,8 +74,17 @@ class PatientTest extends TestCase
 
         $patient = Patient::factory()->make();
 
+        $healthInsurances = HealthInsurance::factory(5)->create();
+
+        $patientWithHealthInsurances = array_merge($patient->toArray(), ['health_insurances' => $healthInsurances->map(function ($healthInsurance) {
+            return [
+                'id' => $healthInsurance->id,
+                'contract_number' => rand(100000, 999999),
+            ];
+        })->toArray()]);
+
         $this->actingAs($user)
-            ->postJson(route('patients.store'), $patient->toArray())
+            ->postJson(route('patients.store'), $patientWithHealthInsurances)
             ->assertStatus(201)
             ->assertJsonStructure(array_keys($patient->toArray()));
 
@@ -74,10 +98,20 @@ class PatientTest extends TestCase
         $patient = Patient::factory();
 
         $createdPatient = $patient->create();
+
         $differentPatient = $patient->make();
 
+        $healthInsurances = HealthInsurance::factory(5)->create();
+
+        $patientWithHealthInsurances = array_merge($differentPatient->toArray(), ['health_insurances' => $healthInsurances->map(function ($healthInsurance) {
+            return [
+                'id' => $healthInsurance->id,
+                'contract_number' => rand(100000, 999999),
+            ];
+        })->toArray()]);
+
         $this->actingAs($user)
-            ->patchJson(route('patients.update', $createdPatient->id), $differentPatient->toArray())
+            ->patchJson(route('patients.update', $createdPatient->id), $patientWithHealthInsurances)
             ->assertStatus(200)
             ->assertJsonStructure(array_keys($differentPatient->toArray()))
             ->assertJson($differentPatient->toArray())
@@ -88,13 +122,14 @@ class PatientTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $patient = Patient::factory()->create();
+        $patient = Patient::factory()->hasAttached(HealthInsurance::factory()->count(3), ['contract_number' => rand(1000, 9999)])->create();
 
         $this->actingAs($user)
             ->deleteJson(route('patients.destroy', $patient->id))
             ->assertStatus(204);
 
         $this->assertDatabaseCount('patients', 0);
+        $this->assertDatabaseCount('health_insurance_patient', 0);
     }
 
     public function test_if_patients_store_route_is_validating_required()
@@ -145,5 +180,45 @@ class PatientTest extends TestCase
             ->postJson(route('patients.store'), ['birthday' => 'not a date'])
             ->assertStatus(422)
             ->assertJsonValidationErrors(['birthday']);
+    }
+
+    public function test_if_patients_store_route_is_validating_input_health_insurances_array()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->postJson(route('patients.store'), ['health_insurances' => 'not a array'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['health_insurances']);
+    }
+
+    public function test_if_patients_store_route_is_validating_input_health_insurances_id_integer()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->postJson(route('patients.store'), ['health_insurances' => ['1' => ['id' => 'a']]])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['health_insurances.1.id']);
+    }
+
+    public function test_if_patients_store_route_is_validating_input_health_insurances_id_exists()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->postJson(route('patients.store'), ['health_insurances' => ['1' => ['id' => 1]]])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['health_insurances.1.id']);
+    }
+
+    public function test_if_patients_store_route_is_validating_input_health_insurances_contract_number_integer()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->postJson(route('patients.store'), ['health_insurances' => ['1' => ['contract_number' => 'a']]])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['health_insurances.1.contract_number']);
     }
 }

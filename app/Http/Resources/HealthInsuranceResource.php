@@ -14,10 +14,16 @@ class HealthInsuranceResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $inputs = [
             'id' => $this->id,
             'description' => $this->description,
             'phone' => $this->phone,
         ];
+
+        if ($this->pivot) {
+            $inputs['contract_number'] = $this->pivot->contract_number;
+        }
+
+        return $inputs;
     }
 }

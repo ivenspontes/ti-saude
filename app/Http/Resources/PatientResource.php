@@ -19,6 +19,7 @@ class PatientResource extends JsonResource
             'name' => $this->name,
             'birthday' => $this->birthday->format('d/m'),
             'phones' => $this->phones,
+            'health_insurances' => HealthInsuranceResource::collection($this->healthInsurances),
         ];
     }
 }

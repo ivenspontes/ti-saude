@@ -13,4 +13,9 @@ class HealthInsurance extends Model
         'description',
         'phone',
     ];
+
+    public function patients()
+    {
+        return $this->belongsToMany(Patient::class)->withPivot('contract_number');
+    }
 }

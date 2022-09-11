@@ -8,6 +8,7 @@ use App\Http\Resources\PatientCollection;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class PatientController extends Controller
 {
@@ -30,6 +31,13 @@ class PatientController extends Controller
     public function store(PatientRequest $request)
     {
         $patient = Patient::create($request->all());
+
+        $healthInsurances = collect($request->health_insurances)->mapWithKeys(function ($healthInsurance) {
+            return [$healthInsurance['id'] => ['contract_number' => $healthInsurance['contract_number']]];
+        })->toArray();
+
+        $patient->healthInsurances()->sync($healthInsurances);
+
         return response()->json($patient->toArray(), 201);
     }
 
@@ -54,6 +62,13 @@ class PatientController extends Controller
     public function update(PatientRequest $request, Patient $patient)
     {
         if ($patient->update($request->all())) {
+
+            $healthInsurances = collect($request->health_insurances)->mapWithKeys(function ($healthInsurance) {
+                return [$healthInsurance['id'] => ['contract_number' => $healthInsurance['contract_number']]];
+            })->toArray();
+
+            $patient->healthInsurances()->sync($healthInsurances);
+
             return response()->json($patient->toArray());
         }
         return response()->json('Error updating patient', 500);
