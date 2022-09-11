@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\HealthInsuranceController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\ProcedureController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,11 +18,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware('auth:api')->group(function () {
     Route::apiResources([
         'patients' => PatientController::class,
-        'health-insurances' => HealthInsuranceController::class
+        'health-insurances' => HealthInsuranceController::class,
+        'procedures' => ProcedureController::class
     ]);
 });
