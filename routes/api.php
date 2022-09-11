@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\{
+    DoctorController,
     HealthInsuranceController,
     PatientController,
     ProcedureController,
-    SpecialtyController,
+    SpecialtyController
 };
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
@@ -29,5 +30,6 @@ Route::middleware('auth:api')->group(function () {
         'health-insurances' => HealthInsuranceController::class,
         'procedures' => ProcedureController::class,
         'specialties' => SpecialtyController::class,
+        'doctors' => DoctorController::class,
     ]);
 });
