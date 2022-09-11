@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,17 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+require __DIR__.'/auth.php';
 
-//Route::fallback(function (){
-//    abort(404, 'API resource not found');
-//});
-
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-], function ($router) {
-    Route::post('login', [AuthController::class, 'login'])->name('jwt.auth.login');
-    Route::post('logout', [AuthController::class, 'logout'])->name('jwt.auth.logout');
-    Route::post('refresh', [AuthController::class, 'refresh'])->name('jwt.auth.refresh');
-    Route::post('me', [AuthController::class, 'me'])->name('jwt.auth.me');
+Route::middleware('auth:api')->group(function () {
+    Route::apiResources([
+        'patients' => PatientController::class
+    ]);
 });
