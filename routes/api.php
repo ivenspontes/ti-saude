@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\HealthInsuranceController;
 use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ require __DIR__.'/auth.php';
 
 Route::middleware('auth:api')->group(function () {
     Route::apiResources([
-        'patients' => PatientController::class
+        'patients' => PatientController::class,
+        'health-insurances' => HealthInsuranceController::class
     ]);
 });
