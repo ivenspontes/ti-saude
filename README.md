@@ -32,3 +32,4 @@ Now build and start docker containers (make sure ports 80, 443 and 5432 are not 
 
 You now can send requests to http://localhost/api use API Documentation to test endpoints
 
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=API%20Ti-Saude&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fivenspontes%2Fti-saude%2Fdevelop%2FInsomnia.json)
