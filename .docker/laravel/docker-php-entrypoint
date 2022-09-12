@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+# first arg is `-f` or `--some-option`
+if [ "${1#-}" != "$1" ]; then
+	set -- apache2-foreground "$@"
+fi
+
+cd /var/www/laravel
+
+composer install --ignore-platform-reqs
+
+chown -R www-data:www-data /var/www/
+chmod -R g+rwX /var/www/
+
+cp .env.example .env
+
+php artisan key:generate
+
+php artisan migrate
+
+php artisan jwt:secret
+
+exec "$@"
