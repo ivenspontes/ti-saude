@@ -17,14 +17,12 @@ return new class extends Migration {
             $table->timestamp('scheduled_date');
             $table->time('scheduled_time');
             $table->boolean('private')->default(false);
-
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('doctor_id');
+            $table->timestamps();
 
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
             $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('cascade');
-
-            $table->timestamps();
         });
     }
 
