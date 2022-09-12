@@ -7,6 +7,7 @@ use App\Http\Requests\ProcedureRequest;
 use App\Http\Resources\ProcedureCollection;
 use App\Http\Resources\ProcedureResource;
 use App\Models\Procedure;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -59,8 +60,9 @@ class ProcedureController extends Controller
     public function update(ProcedureRequest $request, Procedure $procedure): ProcedureResource
     {
         $procedure->update($request->all());
+
         return (new ProcedureResource($procedure))
-            ->additional(['message' => 'Patient updated successfully']);
+            ->additional(['message' => 'Procedure updated successfully']);
     }
 
     /**
@@ -71,7 +73,15 @@ class ProcedureController extends Controller
      */
     public function destroy(Procedure $procedure): JsonResponse
     {
-        $procedure->delete();
-        return response()->json(['message' => 'Procedure record delete']);
+        try {
+            $procedure->delete();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Procedure could not be deleted',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json(['message' => 'Procedure deleted successfully']);
     }
 }
