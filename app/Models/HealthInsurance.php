@@ -9,13 +9,13 @@ class HealthInsurance extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
         'description',
         'phone',
     ];
-
-    public function patients()
-    {
-        return $this->belongsToMany(Patient::class)->withPivot('contract_number');
-    }
 }

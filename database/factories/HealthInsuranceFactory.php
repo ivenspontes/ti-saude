@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\HealthInsurance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\HealthInsurance>
+ * @extends Factory<HealthInsurance>
  */
 class HealthInsuranceFactory extends Factory
 {
@@ -14,7 +15,7 @@ class HealthInsuranceFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'description' => $this->faker->company,
