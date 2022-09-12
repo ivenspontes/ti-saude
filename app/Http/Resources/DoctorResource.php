@@ -21,7 +21,7 @@ class DoctorResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'crm' => $this->crm,
-            'specialties' => SpecialtyResource::collection($this->specialties),
+            'specialty' => new SpecialtyResource($this->specialty),
         ];
     }
 }

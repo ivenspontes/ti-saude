@@ -12,10 +12,15 @@ class Doctor extends Model
     protected $fillable = [
         'name',
         'crm',
+        'specialty_id',
     ];
 
-    public function specialties()
+    protected $with = [
+        'specialty',
+    ];
+
+    public function specialty()
     {
-        return $this->belongsToMany(Specialty::class);
+        return $this->belongsTo(Specialty::class);
     }
 }

@@ -19,7 +19,7 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        return new DoctorCollection(Doctor::with('specialties')->simplePaginate());
+        return new DoctorCollection(Doctor::simplePaginate());
     }
 
     /**
@@ -30,9 +30,8 @@ class DoctorController extends Controller
      */
     public function store(DoctorRequest $request)
     {
-        $doctor = Doctor::create($request->validated());
+        Doctor::create($request->validated());
 
-        $doctor->specialties()->sync($request->specialties);
         return response()->json(['message' => 'Doctor created successfully'], 201);
     }
 
@@ -58,7 +57,6 @@ class DoctorController extends Controller
     {
         $doctor->update($request->validated());
 
-        $doctor->specialties()->sync($request->specialties);
         return response()->json(['message' => 'Doctor updated successfully']);
     }
 

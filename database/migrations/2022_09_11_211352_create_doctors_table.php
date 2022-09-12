@@ -16,7 +16,11 @@ return new class extends Migration
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedInteger('crm');
+            $table->string('crm');
+
+            $table->unsignedBigInteger('specialty_id');
+            $table->foreign('specialty_id')->references('id')->on('specialties');
+
             $table->timestamps();
         });
     }
