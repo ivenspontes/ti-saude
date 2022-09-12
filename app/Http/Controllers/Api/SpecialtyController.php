@@ -7,6 +7,7 @@ use App\Http\Requests\SpecialtyRequest;
 use App\Http\Resources\SpecialtyCollection;
 use App\Http\Resources\SpecialtyResource;
 use App\Models\Specialty;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -72,8 +73,15 @@ class SpecialtyController extends Controller
      */
     public function destroy(Specialty $specialty): JsonResponse
     {
-        $specialty->delete();
+        try {
+            $specialty->delete();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Specialty cannot be deleted',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
-        return response()->json('Specialty deleted successfully');
+        return response()->json(['message' => 'Specialty deleted successfully']);
     }
 }

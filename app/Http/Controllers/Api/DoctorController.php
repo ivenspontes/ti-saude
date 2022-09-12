@@ -7,6 +7,7 @@ use App\Http\Requests\DoctorRequest;
 use App\Http\Resources\DoctorCollection;
 use App\Http\Resources\DoctorResource;
 use App\Models\Doctor;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -72,7 +73,15 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor): JsonResponse
     {
-        $doctor->delete();
+        try {
+            $doctor->delete();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Doctor could not be deleted',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         return response()->json(['message' => 'Doctor deleted successfully']);
     }
 }

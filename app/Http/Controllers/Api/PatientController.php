@@ -7,10 +7,9 @@ use App\Http\Requests\PatientRequest;
 use App\Http\Resources\PatientCollection;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Collection;
 
 class PatientController extends Controller
 {
@@ -86,7 +85,15 @@ class PatientController extends Controller
      */
     public function destroy(Patient $patient)
     {
-        $patient->delete();
-        return response()->json('Patient deleted successfully');
+        try {
+            $patient->delete();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Patient could not be deleted',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json(['message' => 'Patient deleted successfully']);
     }
 }

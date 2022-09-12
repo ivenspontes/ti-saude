@@ -7,6 +7,7 @@ use App\Http\Requests\HealthInsuranceRequest;
 use App\Http\Resources\HealthInsuranceCollection;
 use App\Http\Resources\HealthInsuranceResource;
 use App\Models\HealthInsurance;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -72,8 +73,15 @@ class HealthInsuranceController extends Controller
      */
     public function destroy(HealthInsurance $healthInsurance): JsonResponse
     {
-        $healthInsurance->delete();
+        try {
+            $healthInsurance->delete();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Health Insurance could not be deleted',
+                'error' => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
-        return response()->json('Health Insurance deleted successfully');
+        return response()->json(['message' => 'Health Insurance deleted successfully']);
     }
 }

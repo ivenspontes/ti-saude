@@ -7,6 +7,7 @@ use App\Http\Requests\ConsultationRequest;
 use App\Http\Resources\ConsultationCollection;
 use App\Http\Resources\ConsultationResource;
 use App\Models\Consultation;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -76,7 +77,15 @@ class ConsultationController extends Controller
      */
     public function destroy(Consultation $consultation): JsonResponse
     {
-        $consultation->delete();
-        return response()->json('Consultation record deleted.');
+        try {
+            $consultation->delete();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Consultation could not be deleted',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json(['message' => 'Consultation deleted successfully']);
     }
 }
