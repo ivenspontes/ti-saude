@@ -8,7 +8,7 @@ use App\Http\Resources\DoctorCollection;
 use App\Http\Resources\DoctorResource;
 use App\Models\Doctor;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class DoctorController extends Controller
 {
@@ -17,7 +17,7 @@ class DoctorController extends Controller
      *
      * @return DoctorCollection
      */
-    public function index()
+    public function index(): DoctorCollection
     {
         return new DoctorCollection(Doctor::simplePaginate());
     }
@@ -28,11 +28,14 @@ class DoctorController extends Controller
      * @param DoctorRequest $request
      * @return JsonResponse
      */
-    public function store(DoctorRequest $request)
+    public function store(DoctorRequest $request): JsonResponse
     {
-        Doctor::create($request->validated());
+        $doctor = Doctor::create($request->validated());
 
-        return response()->json(['message' => 'Doctor created successfully'], 201);
+        return (new DoctorResource($doctor))
+            ->additional(['message' => 'Doctor created successfully'])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
@@ -41,7 +44,7 @@ class DoctorController extends Controller
      * @param Doctor $doctor
      * @return DoctorResource
      */
-    public function show(Doctor $doctor)
+    public function show(Doctor $doctor): DoctorResource
     {
         return new DoctorResource($doctor);
     }
@@ -51,13 +54,14 @@ class DoctorController extends Controller
      *
      * @param DoctorRequest $request
      * @param Doctor $doctor
-     * @return JsonResponse
+     * @return DoctorResource
      */
-    public function update(DoctorRequest $request, Doctor $doctor)
+    public function update(DoctorRequest $request, Doctor $doctor): DoctorResource
     {
         $doctor->update($request->validated());
 
-        return response()->json(['message' => 'Doctor updated successfully']);
+        return (new DoctorResource($doctor))
+            ->additional(['message' => 'Doctor updated successfully']);
     }
 
     /**
@@ -66,7 +70,7 @@ class DoctorController extends Controller
      * @param Doctor $doctor
      * @return JsonResponse
      */
-    public function destroy(Doctor $doctor)
+    public function destroy(Doctor $doctor): JsonResponse
     {
         $doctor->delete();
         return response()->json(['message' => 'Doctor deleted successfully']);

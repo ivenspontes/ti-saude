@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Patient>
+ * @extends Factory<Patient>
  */
 class PatientFactory extends Factory
 {
@@ -18,12 +19,12 @@ class PatientFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->name(),
+            'name' => $this->faker->name,
             'phones' => [
-                fake()->phoneNumber(),
-                fake()->phoneNumber()
+               $this->faker->phoneNumber,
+               $this->faker->phoneNumber
             ],
-            'birthday' => fake()->date(),
+            'birthday' => $this->faker->date('d/m/Y'),
         ];
     }
 }

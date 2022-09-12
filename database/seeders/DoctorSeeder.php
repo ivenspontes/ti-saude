@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Doctor;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DoctorSeeder extends Seeder
@@ -13,7 +12,7 @@ class DoctorSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         Doctor::factory()->count(10)->create();
     }

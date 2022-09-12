@@ -25,7 +25,7 @@ class PatientRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'birthday' => ['required', 'date:d/m/Y'],
+            'birthday' => ['required', 'dateformat:d/m/Y'],
             'phones' => ['required', 'array'],
             'health_insurances' => ['array'],
             'health_insurances.*.id' => ['integer', 'exists:health_insurances,id'],

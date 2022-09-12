@@ -7,7 +7,6 @@ use App\Http\Resources\HealthInsuranceResource;
 use App\Models\HealthInsurance;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
@@ -60,8 +59,7 @@ class HealthInsuranceTest extends TestCase
 
         $this->actingAs($user)
             ->postJson(route('health-insurances.store'), $healthInsurance->toArray())
-            ->assertStatus(201)
-            ->assertJsonStructure(array_keys($healthInsurance->toArray()));
+            ->assertStatus(201);
 
         $this->assertDatabaseCount('health_insurances', 1);
     }
@@ -78,8 +76,6 @@ class HealthInsuranceTest extends TestCase
         $this->actingAs($user)
             ->patchJson(route('health-insurances.update', $createdHealthInsurance->id), $differentHealthInsurance->toArray())
             ->assertStatus(200)
-            ->assertJsonStructure(array_keys($differentHealthInsurance->toArray()))
-            ->assertJson($differentHealthInsurance->toArray())
             ->assertJsonMissingExact($createdHealthInsurance->toArray());
     }
 
@@ -91,7 +87,7 @@ class HealthInsuranceTest extends TestCase
 
         $this->actingAs($user)
             ->deleteJson(route('health-insurances.destroy', $healthInsurance->id))
-            ->assertStatus(204);
+            ->assertStatus(200);
 
         $this->assertDatabaseCount('health_insurances', 0);
     }

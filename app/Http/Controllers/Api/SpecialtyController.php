@@ -7,16 +7,17 @@ use App\Http\Requests\SpecialtyRequest;
 use App\Http\Resources\SpecialtyCollection;
 use App\Http\Resources\SpecialtyResource;
 use App\Models\Specialty;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class SpecialtyController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return SpecialtyResource
+     * @return SpecialtyCollection
      */
-    public function index()
+    public function index(): SpecialtyCollection
     {
         return new SpecialtyCollection(Specialty::simplePaginate());
     }
@@ -24,23 +25,26 @@ class SpecialtyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param SpecialtyRequest $request
+     * @return JsonResponse
      */
-    public function store(SpecialtyRequest $request)
+    public function store(SpecialtyRequest $request): JsonResponse
     {
-        Specialty::create($request->validated());
+        $specialty = Specialty::create($request->validated());
 
-        return response()->json('Specialty created successfully', 201);
+        return (new SpecialtyResource($specialty))
+            ->additional(['message' => 'Specialty created successfully'])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Specialty  $specialty
+     * @param Specialty $specialty
      * @return SpecialtyResource
      */
-    public function show(Specialty $specialty)
+    public function show(Specialty $specialty): SpecialtyResource
     {
         return new SpecialtyResource($specialty);
     }
@@ -48,24 +52,25 @@ class SpecialtyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Specialty  $specialty
-     * @return \Illuminate\Http\JsonResponse
+     * @param SpecialtyRequest $request
+     * @param Specialty $specialty
+     * @return SpecialtyResource
      */
-    public function update(SpecialtyRequest $request, Specialty $specialty)
+    public function update(SpecialtyRequest $request, Specialty $specialty): SpecialtyResource
     {
         $specialty->update($request->validated());
 
-        return response()->json('Specialty updated successfully');
+        return (new SpecialtyResource($specialty))
+            ->additional(['message' => 'Specialty updated successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Specialty  $specialty
-     * @return \Illuminate\Http\JsonResponse
+     * @param Specialty $specialty
+     * @return JsonResponse
      */
-    public function destroy(Specialty $specialty)
+    public function destroy(Specialty $specialty): JsonResponse
     {
         $specialty->delete();
 

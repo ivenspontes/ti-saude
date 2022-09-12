@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Procedure;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Procedure>
+ * @extends Factory<Procedure>
  */
 class ProcedureFactory extends Factory
 {
@@ -14,7 +15,7 @@ class ProcedureFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => fake()->name(),

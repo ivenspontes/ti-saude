@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Specialty;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Specialty>
+ * @extends Factory<Specialty>
  */
 class SpecialtyFactory extends Factory
 {
@@ -14,7 +15,7 @@ class SpecialtyFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'name' => fake()->name(),

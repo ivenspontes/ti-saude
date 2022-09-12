@@ -8,7 +8,7 @@ use App\Http\Resources\HealthInsuranceCollection;
 use App\Http\Resources\HealthInsuranceResource;
 use App\Models\HealthInsurance;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class HealthInsuranceController extends Controller
 {
@@ -17,7 +17,7 @@ class HealthInsuranceController extends Controller
      *
      * @return HealthInsuranceCollection
      */
-    public function index()
+    public function index(): HealthInsuranceCollection
     {
         return new HealthInsuranceCollection(HealthInsurance::simplePaginate());
     }
@@ -28,10 +28,14 @@ class HealthInsuranceController extends Controller
      * @param HealthInsuranceRequest $request
      * @return JsonResponse
      */
-    public function store(HealthInsuranceRequest $request)
+    public function store(HealthInsuranceRequest $request): JsonResponse
     {
-        $healthInsurance = HealthInsurance::create($request->all());
-        return response()->json($healthInsurance->toArray(), 201);
+        $healthInsurance = HealthInsurance::create($request->validated());
+
+        return (new HealthInsuranceResource($healthInsurance))
+            ->additional(['message' => 'Health Insurance created successfully'])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
@@ -40,7 +44,7 @@ class HealthInsuranceController extends Controller
      * @param HealthInsurance $healthInsurance
      * @return HealthInsuranceResource
      */
-    public function show(HealthInsurance $healthInsurance)
+    public function show(HealthInsurance $healthInsurance): HealthInsuranceResource
     {
         return new HealthInsuranceResource($healthInsurance);
     }
@@ -50,14 +54,14 @@ class HealthInsuranceController extends Controller
      *
      * @param HealthInsuranceRequest $request
      * @param HealthInsurance $healthInsurance
-     * @return JsonResponse
+     * @return HealthInsuranceResource
      */
-    public function update(HealthInsuranceRequest $request, HealthInsurance $healthInsurance)
+    public function update(HealthInsuranceRequest $request, HealthInsurance $healthInsurance): HealthInsuranceResource
     {
-        if ($healthInsurance->update($request->all())) {
-            return response()->json($healthInsurance->toArray());
-        }
-        return response()->json('Error updating patient', 500);
+        $healthInsurance->update($request->validated());
+
+        return (new HealthInsuranceResource($healthInsurance))
+            ->additional(['message' => 'Health Insurance updated successfully']);
     }
 
     /**
@@ -66,11 +70,10 @@ class HealthInsuranceController extends Controller
      * @param HealthInsurance $healthInsurance
      * @return JsonResponse
      */
-    public function destroy(HealthInsurance $healthInsurance)
+    public function destroy(HealthInsurance $healthInsurance): JsonResponse
     {
-        if ($healthInsurance->delete()) {
-            return response()->json('Patient deleted successfully', 204);
-        }
-        return response()->json('Error deleting patient', 500);
+        $healthInsurance->delete();
+
+        return response()->json('Health Insurance deleted successfully');
     }
 }
