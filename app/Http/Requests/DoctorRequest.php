@@ -24,10 +24,9 @@ class DoctorRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'crm' => 'required|integer',
-            'specialties' => 'nullable|array',
-            'specialties.*' => 'integer|exists:specialties,id',
+            'name' => ['required', 'string'],
+            'crm' => ['required', 'string'],
+            'specialty_id' => ['required', 'exists:specialties,id'],
         ];
     }
 }
