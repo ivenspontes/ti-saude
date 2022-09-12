@@ -7,7 +7,9 @@ use App\Http\Requests\PatientRequest;
 use App\Http\Resources\PatientCollection;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 
 class PatientController extends Controller
@@ -25,12 +27,12 @@ class PatientController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  PatientRequest  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param PatientRequest $request
+     * @return JsonResponse
      */
     public function store(PatientRequest $request)
     {
-        $patient = Patient::create($request->all());
+        $patient = Patient::create($request->validated());
 
         $healthInsurances = collect($request->health_insurances)->mapWithKeys(function ($healthInsurance) {
             return [$healthInsurance['id'] => ['contract_number' => $healthInsurance['contract_number']]];
@@ -38,13 +40,16 @@ class PatientController extends Controller
 
         $patient->healthInsurances()->sync($healthInsurances);
 
-        return response()->json($patient->toArray(), 201);
+        return (new PatientResource($patient))
+            ->additional(['message' => 'Patient created successfully'])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $patient
+     * @param Patient $patient
      * @return PatientResource
      */
     public function show(Patient $patient)
@@ -55,36 +60,33 @@ class PatientController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  PatientRequest $request
-     * @param  Patient  $patient
-     * @return \Illuminate\Http\JsonResponse
+     * @param PatientRequest $request
+     * @param Patient $patient
+     * @return PatientResource
      */
     public function update(PatientRequest $request, Patient $patient)
     {
-        if ($patient->update($request->all())) {
+        $patient->update($request->validated());
 
-            $healthInsurances = collect($request->health_insurances)->mapWithKeys(function ($healthInsurance) {
-                return [$healthInsurance['id'] => ['contract_number' => $healthInsurance['contract_number']]];
-            })->toArray();
+        $healthInsurances = collect($request->health_insurances)->mapWithKeys(function ($healthInsurance) {
+            return [$healthInsurance['id'] => ['contract_number' => $healthInsurance['contract_number']]];
+        })->toArray();
 
-            $patient->healthInsurances()->sync($healthInsurances);
+        $patient->healthInsurances()->sync($healthInsurances);
 
-            return response()->json($patient->toArray());
-        }
-        return response()->json('Error updating patient', 500);
+        return (new PatientResource($patient))
+            ->additional(['message' => 'Patient updated successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Patient  $patient
-     * @return \Illuminate\Http\JsonResponse
+     * @param Patient $patient
+     * @return JsonResponse
      */
     public function destroy(Patient $patient)
     {
-        if ($patient->delete()) {
-            return response()->json('Patient deleted successfully', 204);
-        }
-        return response()->json('Error deleting patient', 500);
+        $patient->delete();
+        return response()->json('Patient deleted successfully');
     }
 }
