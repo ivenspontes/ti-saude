@@ -1,14 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\{
+use App\Http\Controllers\Api\{ConsultationController,
     DoctorController,
     HealthInsuranceController,
     PatientController,
     ProcedureController,
-    SpecialtyController
-};
-use App\Http\Controllers\AuthController;
-use Illuminate\Http\Request;
+    SpecialtyController};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,5 +28,6 @@ Route::middleware('auth:api')->group(function () {
         'procedures' => ProcedureController::class,
         'specialties' => SpecialtyController::class,
         'doctors' => DoctorController::class,
+        'consultations' => ConsultationController::class,
     ]);
 });
