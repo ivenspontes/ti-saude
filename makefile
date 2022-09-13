@@ -22,3 +22,11 @@ build:
 	docker exec -it saude-laravel php artisan migrate --seed
 	docker exec -it saude-laravel php artisan jwt:secret
 
+docker-laravel:
+	composer install --ignore-platform-reqs
+	chown -R www-data:www-data /var/www/
+	chmod -R g+rwX /var/www/
+	cp -f .env.example .env
+	php artisan key:generate
+	php artisan migrate --seed
+	php artisan jwt:secret
