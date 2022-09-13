@@ -22,10 +22,20 @@ After project clone finish, enter in project folder
 
 Now build and start docker containers (make sure ports 80 is not in use)
 
+#### Linux:
+
 ```bash
   make build
 ```
-(you can change ports in docker-compose.yml, if change web ports, use http://localhost:(port)/api)
+
+#### Windows:
+
+```bash
+  docker-compose up -d --build
+  
+  docker exec -it saude-laravel make docker-laravel
+```
+(you can change ports in docker-compose.yml, if you change port 80 use http://localhost:(port)/api)
 
 
 ## Using
